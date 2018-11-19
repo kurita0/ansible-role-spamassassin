@@ -1,0 +1,51 @@
+---
+- name: Install spamassassin
+  pkgng: name={{ item }} state=present
+  with_items:
+    - spamassassin
+    - spamass-milter
+
+- name: sa-update
+  shell: >
+    /usr/local/bin/sa-update
+  register: sa_update
+  failed_when: sa_update.rc not in [0,1]
+  when: false
+
+- name: Copy spamassassin conf
+  copy: src={{ item }} dest=/usr/local/etc/mail/spamassassin/{{ item }} mode=0644 backup=yes
+  with_items:
+    - spamc.conf
+    - v320.pre
+  notify: restart sa-spamd
+
+- name: Copy local.cf whitelist
+  template: src={{ item }} dest=/usr/local/etc/mail/spamassassin/{{ item }} backup=yes
+  with_items:
+    - local.cf
+    - whitelist
+
+- name: Enable spamassassin
+  service: name={{ item }} enabled=yes
+  with_items:
+    - sa-spamd
+    - spamass-milter
+
+- name: mkdir /var/run/spamass-milter
+  file: dest=/var/run/spamass-milter state=directory owner=spamd group=spamd
+
+- name: Configure rc.conf
+  lineinfile: "dest=/etc/rc.conf state=present regexp='{{ item.regexp }}' line='{{ item.line }}'"
+  with_items:
+    - regexp: '^spamass_milter_user='
+      line: 'spamass_milter_user="spamd"'
+    - regexp: '^spamass_milter_group='
+      line: 'spamass_milter_group="spamd"'
+    - regexp: '^spamass_milter_socket='
+      line: 'spamass_milter_socket="/var/run/spamass-milter/spamass-milter.sock"'
+
+- name: Start spamassassin
+  service: name={{ item }} state=started
+  with_items:
+    - sa-spamd
+    - spamass-milter

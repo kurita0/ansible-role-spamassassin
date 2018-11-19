@@ -1,0 +1,6 @@
+---
+- name: restart sa-spamd
+  service: name=sa-spamd state=restarted
+
+- name: restart spamass-milter
+  service: name=spamass-milter state=restarted

@@ -1,0 +1,18 @@
+galaxy_info:
+  role_name: spamassassin
+  author: hideaki kurita
+  description: spamassassin
+
+  license: license (BSD, MIT)
+
+  min_ansible_version: 2.5
+
+  platforms:
+    - name: FreeBSD 
+      versions:
+      - 11.1
+      - 11.2
+
+  galaxy_tags: []
+
+dependencies: []

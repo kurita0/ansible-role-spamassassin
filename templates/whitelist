@@ -1,0 +1,3 @@
+{% for whitelist_from in spamassassin_whitelist_from %}
+whitelist_from	{{ whitelist_from }}
+{% endfor %}
