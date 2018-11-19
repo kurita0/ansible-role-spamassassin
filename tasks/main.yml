@@ -5,12 +5,18 @@
     - spamassassin
     - spamass-milter
 
+- name: Check sa-update
+  command: ls /var/db/spamassassin
+  check_mode: no
+  changed_when: false
+  register: var_db_spamassassin
+
 - name: sa-update
   shell: >
     /usr/local/bin/sa-update
   register: sa_update
   failed_when: sa_update.rc not in [0,1]
-  when: false
+  when: var_db_spamassassin.stdout == ""
 
 - name: Copy spamassassin conf
   copy: src={{ item }} dest=/usr/local/etc/mail/spamassassin/{{ item }} mode=0644 backup=yes
