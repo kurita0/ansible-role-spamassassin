@@ -13,7 +13,8 @@
 
 - name: sa-update
   shell: >
-    /usr/local/bin/sa-update
+    /usr/local/bin/sa-update &&
+    /usr/local/bin/sa-compile
   register: sa_update
   failed_when: sa_update.rc not in [0,1]
   when: var_db_spamassassin.stdout == ""
